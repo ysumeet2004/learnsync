@@ -1,0 +1,42 @@
+# Supabase CLI Configuration
+project_id = "your-project-id"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public"]
+max_rows = 1000
+
+[auth]
+enabled = true
+port = 54322
+site_url = "http://localhost:3000"
+additional_redirect_urls = ["https://localhost:3000"]
+jwt_secret = "super-secret-jwt-token-with-at-least-32-characters-long"
+enable_signup = true
+
+[db]
+port = 54322
+major_version = 15
+
+[realtime]
+enabled = true
+max_concurrent_users = 200
+max_event_channels = 128
+max_chained_pushes = 128
+max_pushes_per_second = 1000
+max_event_size_bytes = 131072
+timeout_sec = 3
+ssl_enforced = false
+
+[studio]
+enabled = true
+port = 54323
+api_url = "http://localhost:54321"
+openapi_url = "http://localhost:54321"
+
+[inbucket]
+enabled = true
+port = 54324
+smtp_port = 54325
+pop3_port = 54326
