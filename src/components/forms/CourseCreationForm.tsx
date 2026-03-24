@@ -17,7 +17,7 @@ export default function CourseCreationForm() {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    source: 'youtube' as const,
+    source: 'youtube' as 'youtube' | 'udemy' | 'custom',
     source_url: '',
   });
 
@@ -50,7 +50,7 @@ export default function CourseCreationForm() {
         body: JSON.stringify(formData),
       });
 
-      const { data, error } = await response.json();
+      const { error } = await response.json();
 
       if (error) {
         addNotification(error, 'error');
@@ -136,7 +136,7 @@ export default function CourseCreationForm() {
         }
         error={errors.source_url}
         placeholder="https://www.youtube.com/playlist?list=..."
-        icon={LinkIcon}
+        icon={<LinkIcon size={16} />}
       />
 
       {/* Info Box */}

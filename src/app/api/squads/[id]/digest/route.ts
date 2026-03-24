@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase-server';
-import { cookies } from 'next/headers';
 import Anthropic from '@anthropic-ai/sdk';
 
 const anthropic = new Anthropic({
@@ -64,14 +63,17 @@ Keep it concise (150-200 words), friendly, and actionable. Use markdown formatti
 }
 
 export async function GET(
-  request: Request,
+  _request: Request,
   { params }: { params: { id: string } }
 ) {
   try {
-    const supabase = createClient(cookies());
-    const { data: user } = await supabase.auth.getUser();
+    const supabase = createClient();
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
 
-    if (!user) {
+    if (userError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -80,7 +82,7 @@ export async function GET(
     // Verify user is in squad
     const { data: member } = await supabase
       .from('squad_members')
-      .select('id')
+      .select('squad_id')
       .eq('squad_id', squadId)
       .eq('user_id', user.id)
       .single();

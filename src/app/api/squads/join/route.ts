@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
     // Check if user is already a member
     const { data: existingMember } = await supabase
       .from('squad_members')
-      .select('id')
+      .select('squad_id')
       .eq('squad_id', squad.id)
       .eq('user_id', user.id)
       .single();

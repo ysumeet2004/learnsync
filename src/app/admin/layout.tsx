@@ -1,6 +1,5 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase-server';
-import { cookies } from 'next/headers';
 import AdminSidebar from '@/components/admin/AdminSidebar';
 
 export default async function AdminLayout({
@@ -8,8 +7,10 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const supabase = createClient(cookies());
-  const { data: user } = await supabase.auth.getUser();
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) {
     redirect('/login');

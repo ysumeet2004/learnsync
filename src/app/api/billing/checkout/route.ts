@@ -1,14 +1,16 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase-server';
-import { cookies } from 'next/headers';
 import { stripe, PLANS } from '@/lib/stripe';
 
 export async function POST(request: Request) {
   try {
-    const supabase = createClient(cookies());
-    const { data: user } = await supabase.auth.getUser();
+    const supabase = createClient();
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
 
-    if (!user) {
+    if (userError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -23,7 +25,7 @@ export async function POST(request: Request) {
     // Get or create Stripe customer
     const { data: profile } = await supabase
       .from('profiles')
-      .select('stripe_customer_id, email, display_name')
+      .select('stripe_customer_id, display_name')
       .eq('id', user.id)
       .single();
 
@@ -68,7 +70,7 @@ export async function POST(request: Request) {
       billing_address_collection: 'auto',
       line_items: [
         {
-          price: plan.stripePriceId,
+          price: plan.stripePriceId ?? undefined,
           quantity: 1,
         },
       ],
