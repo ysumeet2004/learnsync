@@ -8,6 +8,9 @@ export type Database = {
           display_name: string | null;
           avatar_url: string | null;
           plan: 'free' | 'pro' | 'squad' | 'teams';
+          stripe_customer_id: string | null;
+          stripe_subscription_id: string | null;
+          is_super_admin: boolean | null;
           created_at: string;
         };
         Insert: {
@@ -16,6 +19,9 @@ export type Database = {
           display_name?: string | null;
           avatar_url?: string | null;
           plan?: 'free' | 'pro' | 'squad' | 'teams';
+          stripe_customer_id?: string | null;
+          stripe_subscription_id?: string | null;
+          is_super_admin?: boolean | null;
           created_at?: string;
         };
         Update: {
@@ -24,8 +30,12 @@ export type Database = {
           display_name?: string | null;
           avatar_url?: string | null;
           plan?: 'free' | 'pro' | 'squad' | 'teams';
+          stripe_customer_id?: string | null;
+          stripe_subscription_id?: string | null;
+          is_super_admin?: boolean | null;
           created_at?: string;
         };
+        Relationships: [];
       };
       squads: {
         Row: {
@@ -55,6 +65,7 @@ export type Database = {
           plan?: 'free' | 'pro' | 'squad' | 'teams';
           created_at?: string;
         };
+        Relationships: [];
       };
       squad_members: {
         Row: {
@@ -75,12 +86,14 @@ export type Database = {
           role?: 'learner' | 'lead' | 'instructor';
           joined_at?: string;
         };
+        Relationships: [];
       };
       courses: {
         Row: {
           id: string;
           squad_id: string;
           title: string;
+          description: string | null;
           source: 'youtube' | 'udemy' | 'custom';
           source_url: string;
           playlist_id: string | null;
@@ -93,6 +106,7 @@ export type Database = {
           id?: string;
           squad_id: string;
           title: string;
+          description?: string | null;
           source: 'youtube' | 'udemy' | 'custom';
           source_url: string;
           playlist_id?: string | null;
@@ -105,6 +119,7 @@ export type Database = {
           id?: string;
           squad_id?: string;
           title?: string;
+          description?: string | null;
           source?: 'youtube' | 'udemy' | 'custom';
           source_url?: string;
           playlist_id?: string | null;
@@ -113,6 +128,7 @@ export type Database = {
           created_by?: string | null;
           created_at?: string;
         };
+        Relationships: [];
       };
       course_items: {
         Row: {
@@ -120,6 +136,7 @@ export type Database = {
           course_id: string;
           title: string;
           source_id: string;
+          source: string | null;
           duration_seconds: number | null;
           position: number;
           thumbnail_url: string | null;
@@ -130,6 +147,7 @@ export type Database = {
           course_id: string;
           title: string;
           source_id: string;
+          source?: string | null;
           duration_seconds?: number | null;
           position: number;
           thumbnail_url?: string | null;
@@ -140,11 +158,13 @@ export type Database = {
           course_id?: string;
           title?: string;
           source_id?: string;
+          source?: string | null;
           duration_seconds?: number | null;
           position?: number;
           thumbnail_url?: string | null;
           transcript?: string | null;
         };
+        Relationships: [];
       };
       watch_events: {
         Row: {
@@ -174,32 +194,40 @@ export type Database = {
           percent_watched?: number | null;
           created_at?: string;
         };
+        Relationships: [];
       };
       progress: {
         Row: {
           user_id: string;
           item_id: string;
           percent_watched: number;
+          completed: boolean;
           is_complete: boolean;
           watch_time_seconds: number;
+          last_position: number | null;
           last_watched_at: string | null;
         };
         Insert: {
           user_id: string;
           item_id: string;
           percent_watched?: number;
+          completed?: boolean;
           is_complete?: boolean;
           watch_time_seconds?: number;
+          last_position?: number | null;
           last_watched_at?: string | null;
         };
         Update: {
           user_id?: string;
           item_id?: string;
           percent_watched?: number;
+          completed?: boolean;
           is_complete?: boolean;
           watch_time_seconds?: number;
+          last_position?: number | null;
           last_watched_at?: string | null;
         };
+        Relationships: [];
       };
       notes: {
         Row: {
@@ -229,6 +257,7 @@ export type Database = {
           created_at?: string;
           updated_at?: string;
         };
+        Relationships: [];
       };
       assignments: {
         Row: {
@@ -261,6 +290,7 @@ export type Database = {
           created_by?: string | null;
           created_at?: string;
         };
+        Relationships: [];
       };
       submissions: {
         Row: {
@@ -269,6 +299,7 @@ export type Database = {
           user_id: string | null;
           content: string | null;
           file_url: string | null;
+          status: string | null;
           submitted_at: string;
         };
         Insert: {
@@ -277,6 +308,7 @@ export type Database = {
           user_id?: string | null;
           content?: string | null;
           file_url?: string | null;
+          status?: string | null;
           submitted_at?: string;
         };
         Update: {
@@ -285,8 +317,10 @@ export type Database = {
           user_id?: string | null;
           content?: string | null;
           file_url?: string | null;
+          status?: string | null;
           submitted_at?: string;
         };
+        Relationships: [];
       };
       quizzes: {
         Row: {
@@ -325,6 +359,7 @@ export type Database = {
           created_at?: string;
           updated_at?: string;
         };
+        Relationships: [];
       };
       quiz_questions: {
         Row: {
@@ -357,6 +392,7 @@ export type Database = {
           position?: number;
           created_at?: string;
         };
+        Relationships: [];
       };
       quiz_attempts: {
         Row: {
@@ -404,10 +440,11 @@ export type Database = {
           completed_at?: string;
           created_at?: string;
         };
+        Relationships: [];
       };
     };
-    Views: {};
-    Functions: {};
+    Views: Record<string, never>;
+    Functions: Record<string, never>;
     Enums: {
       plan_type: 'free' | 'pro' | 'squad' | 'teams';
       role_type: 'learner' | 'lead' | 'instructor';

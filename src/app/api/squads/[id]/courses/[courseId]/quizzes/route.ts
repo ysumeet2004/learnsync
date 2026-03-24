@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase-server';
-import { cookies } from 'next/headers';
 import Anthropic from '@anthropic-ai/sdk';
 
 const anthropic = new Anthropic({
@@ -16,14 +15,12 @@ interface QuizQuestion {
 
 async function generateQuizWithClaude(
   courseTitle: string,
-  itemTitle: string,
-  description?: string
+  itemTitle: string
 ): Promise<QuizQuestion[]> {
   const prompt = `You are an expert educational assessment designer. Generate a multiple-choice quiz with 5 questions based on the following course material:
 
 Course: ${courseTitle}
 Video/Item: ${itemTitle}
-${description ? `Description: ${description}` : ''}
 
 For each question, provide:
 1. A clear, well-worded question
@@ -70,13 +67,16 @@ Generate exactly 5 questions. Make them challenging but fair, testing comprehens
 
 export async function POST(
   request: Request,
-  { params }: { params: { id: string; courseId: string } }
+  { params: _params }: { params: { id: string; courseId: string } }
 ) {
   try {
-    const supabase = createClient(cookies());
-    const { data: user } = await supabase.auth.getUser();
+    const supabase = createClient();
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
 
-    if (!user) {
+    if (userError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -124,10 +124,10 @@ export async function POST(
     }
 
     // Generate quiz using Claude
+    const courseTitle = (item.courses as { title?: string } | null)?.title || 'Course';
     const questions = await generateQuizWithClaude(
-      item.courses?.title || 'Course',
-      item.title,
-      item.description || undefined
+      courseTitle,
+      item.title
     );
 
     // Create quiz in database with total_questions

@@ -2,15 +2,21 @@ import { InputHTMLAttributes, forwardRef } from 'react';
 import { clsx } from 'clsx';
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
+  label?: string;
   icon?: React.ReactNode;
   error?: string;
   helperText?: string;
 }
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ className, error, icon, helperText, ...props }, ref) => {
+  ({ className, label, error, icon, helperText, ...props }, ref) => {
     return (
       <div className="w-full">
+        {label && (
+          <label className="block text-sm font-medium text-text-secondary mb-2">
+            {label}
+          </label>
+        )}
         <div className="relative">
           {icon && <div className="absolute left-3 top-1/2 -translate-y-1/2 text-text-tertiary">{icon}</div>}
           <input

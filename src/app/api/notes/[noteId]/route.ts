@@ -1,16 +1,18 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase-server';
-import { cookies } from 'next/headers';
 
 export async function DELETE(
-  request: Request,
+  _request: Request,
   { params }: { params: { noteId: string } }
 ) {
   try {
-    const supabase = createClient(cookies());
-    const { data: user } = await supabase.auth.getUser();
+    const supabase = createClient();
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
 
-    if (!user) {
+    if (userError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -27,7 +29,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Note not found' }, { status: 404 });
     }
 
-    if (note.user_id !== user.user.id) {
+    if (note.user_id !== user.id) {
       return NextResponse.json(
         { error: 'Cannot delete other users notes' },
         { status: 403 }

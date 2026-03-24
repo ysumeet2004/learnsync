@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase-server';
 import { squadSchema } from '@/lib/validations';
-import { v4 as uuid } from 'uuid';
 
 export async function POST(request: NextRequest) {
   try {
@@ -26,7 +25,7 @@ export async function POST(request: NextRequest) {
       .from('squads')
       .insert({
         name: validatedData.name,
-        description: validatedData.description,
+        description: validatedData.description ?? null,
         owner_id: user.id,
         plan: 'free', // Default to free plan
       })
@@ -92,16 +91,21 @@ export async function GET(request: NextRequest) {
     }
 
     // Get squads user is a member of
+    const { data: memberships } = await supabase
+      .from('squad_members')
+      .select('squad_id')
+      .eq('user_id', user.id);
+
+    const squadIds = (memberships ?? []).map((m) => m.squad_id);
+
+    if (squadIds.length === 0) {
+      return NextResponse.json({ data: [] });
+    }
+
     const { data: squads, error: squadError } = await supabase
       .from('squads')
       .select('*')
-      .in(
-        'id',
-        supabase
-          .from('squad_members')
-          .select('squad_id')
-          .eq('user_id', user.id)
-      );
+      .in('id', squadIds);
 
     if (squadError) {
       return NextResponse.json(

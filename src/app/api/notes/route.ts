@@ -1,14 +1,16 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase-server';
-import { cookies } from 'next/headers';
 import { noteSchema } from '@/lib/validations';
 
 export async function POST(request: Request) {
   try {
-    const supabase = createClient(cookies());
-    const { data: user } = await supabase.auth.getUser();
+    const supabase = createClient();
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
 
-    if (!user) {
+    if (userError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -30,7 +32,7 @@ export async function POST(request: Request) {
     const { data: note, error: noteError } = await supabase
       .from('notes')
       .insert({
-        user_id: user.user.id,
+        user_id: user.id,
         item_id,
         content,
         video_timestamp_seconds: video_timestamp_seconds || null,
